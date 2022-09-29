@@ -1,6 +1,11 @@
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 class Cursos {
 
@@ -58,7 +63,49 @@ public class ExemploCursos {
     .mapToInt(Cursos::getInscritos)
     .sum();
 
-    System.out.println(sum);
+    OptionalDouble median = cursos.stream()
+    .mapToInt(c -> c.getInscritos())
+    .average();
+
+    System.out.println("média " + median +", soma "+sum);
+
+    //Nova classe Optional lida com null - pode existir ou não
+    Optional<Cursos> optionalCurso = cursos.stream().filter(c -> c.getInscritos() >= 100).findAny();
+    Cursos curso = optionalCurso.orElse(null);
+    System.out.println(curso.getNome());
+
+    //ifPresent verifica a existência e aplica uma ação
+    optionalCurso.ifPresent(c -> System.out.println(c.getNome()));
+
+
+    //stream para uma lista através do método collect, salva numa nova lista, não sobrescreve
+    List resultado = cursos.stream().filter(c -> c.getInscritos() >= 100).collect(Collectors.toList());
+
+    //strem gerando e armazenando um mapa
+    Map<String, Integer> mapa = cursos.stream()
+    .filter(c -> c.getInscritos() >= 100)
+    .collect(Collectors.toMap
+        (c -> c.getNome(), 
+        c -> c.getInscritos()));
+    
+    System.out.println(mapa);
+
+
+    //stream com fluxo de saída
+    cursos.stream()
+    .filter(c -> c.getInscritos() >= 100)
+    .collect(Collectors.toMap
+        (c -> c.getNome(), 
+        c -> c.getInscritos()))
+    .forEach((nome, inscritos) -> System.out.println(nome + " tem " + inscritos + " alunos "));
+
+    cursos.stream()
+    .filter(c -> c.getInscritos() >= 100)
+    .collect(Collectors.toMap
+        (c -> c.getNome(), 
+        c -> c.getInscritos()))
+    .forEach((nome, inscritos) -> System.out.println(nome + " tem " + inscritos + " alunos "));
+
 
 
   }
